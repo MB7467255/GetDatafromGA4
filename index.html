@@ -7,7 +7,7 @@
   <script>
     async function fetchDemographics() {
       try {
-        const response = await fetch('https://mb7467255.github.io/GetDatafromGA4/callback'); // URL ของเซิร์ฟเวอร์ที่ดึงข้อมูล
+        const response = await fetch('http://localhost:3000/callback'); // URL ของเซิร์ฟเวอร์ที่ดึงข้อมูล
         const data = await response.json();
 
         const demographics = data.rows.map(row => {
