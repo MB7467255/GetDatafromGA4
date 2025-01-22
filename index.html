@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GA4 Demographics</title>
+  <script>
+    async function fetchDemographics() {
+      const apiUrl = 'https://your-backend-server.com/get-demographics'; // URL ของ Backend
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error('Error fetching demographics data');
+        const data = await response.json();
+
+        // แสดงข้อมูลที่ได้
+        const resultsContainer = document.getElementById('results');
+        data.rows.forEach(row => {
+          const gender = row.dimensionValues[0].value;
+          const ageBracket = row.dimensionValues[1].value;
+          const activeUsers = row.metricValues[0].value;
+
+          const resultDiv = document.createElement('div');
+          resultDiv.textContent = `Gender: ${gender}, Age: ${ageBracket}, Active Users: ${activeUsers}`;
+          resultsContainer.appendChild(resultDiv);
+        });
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('results').textContent = 'Failed to load data.';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchDemographics);
+  </script>
+</head>
+<body>
+  <h1>GA4 Demographic Data</h1>
+  <div id="results">Loading demographics data...</div>
+</body>
+</html>
