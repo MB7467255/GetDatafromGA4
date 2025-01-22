@@ -7,7 +7,7 @@ const port = 3000;
 const oAuth2Client = new google.auth.OAuth2(
   '275358461010-gd0ikq8ksa17vsf5flrbftcan6bmga3d',
   'YOGOCSPX-R7bnJO61woBTiGRW3a07R_wmobQc',
-  'YOUR_REDIRECT_URI'
+  'https://mb7467255.github.io/GetDatafromGA4/'
 );
 
 // สร้าง URL สำหรับการยืนยันตัวตน
