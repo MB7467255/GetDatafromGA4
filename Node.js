@@ -11,7 +11,7 @@ const oAuth2Client = new google.auth.OAuth2(
 );
 
 // GA4 Property ID
-const propertyId = 'properties/474474772';
+const propertyId = 'properties/474011638';
 
 app.get('/get-demographics', async (req, res) => {
   try {
