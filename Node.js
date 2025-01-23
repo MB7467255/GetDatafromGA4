@@ -6,23 +6,65 @@ const PORT = process.env.PORT || 3000;
 // OAuth 2.0 Client Configuration
 const oAuth2Client = new google.auth.OAuth2(
   '358405041059-e9c3kjh8crvhjp1acee66aquof3a0799', // Replace with your Client ID
-  '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',           // Replace with your Client Secret
-  'https://get-datafrom-ga-4.vercel.app/'          // Replace with your Redirect URI
+  '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', // Replace with your Client Secret
+  'https://get-datafrom-ga-4.vercel.app/' // Replace with your Redirect URI (e.g., http://localhost:3000/oauth2callback)
 );
 
 // GA4 Property ID
 const propertyId = 'properties/474011638'; // Replace with your GA4 Property ID
 
-// Route to fetch demographics data
+// Store tokens (in memory for this example; replace with database in production)
+let accessToken = null;
+let refreshToken = null;
+
+// Generate the Google OAuth 2.0 URL
+app.get('/auth', (req, res) => {
+  const authUrl = oAuth2Client.generateAuthUrl({
+    access_type: 'offline',
+    scope: ['https://www.googleapis.com/auth/analytics.readonly'],
+  });
+  res.redirect(authUrl);
+});
+
+// Handle OAuth 2.0 callback
+app.get('/oauth2callback', async (req, res) => {
+  const code = req.query.code;
+
+  try {
+    const { tokens } = await oAuth2Client.getToken(code);
+    oAuth2Client.setCredentials(tokens);
+
+    // Store tokens
+    accessToken = tokens.access_token;
+    refreshToken = tokens.refresh_token;
+
+    res.send('Authorization successful! You can now use the /get-demographics endpoint.');
+  } catch (error) {
+    console.error('Error during OAuth callback:', error);
+    res.status(500).send('Failed to authorize.');
+  }
+});
+
+// Fetch demographics data
 app.get('/get-demographics', async (req, res) => {
   try {
-    // Set OAuth2 credentials (replace with valid tokens)
+    // Ensure the access token is set
+    if (!accessToken) {
+      return res.status(401).send('Authorization is required. Please visit /auth first.');
+    }
+
+    // Set the credentials
     oAuth2Client.setCredentials({
-      access_token: 'YOUR_ACCESS_TOKEN',     // Replace with a valid access token
-      refresh_token: 'YOUR_REFRESH_TOKEN',   // Replace with a valid refresh token
+      access_token: accessToken,
+      refresh_token: refreshToken,
     });
 
-    // Initialize Analytics Data API
+    // Refresh the access token if it's expired
+    if (!oAuth2Client.isTokenExpiring()) {
+      await oAuth2Client.refreshAccessToken();
+    }
+
+    // Initialize the Analytics Data API
     const analyticsData = google.analyticsdata('v1beta');
 
     // Run the report
@@ -36,7 +78,6 @@ app.get('/get-demographics', async (req, res) => {
       },
     });
 
-    // Send response data
     res.json(response.data);
   } catch (error) {
     console.error('Error fetching demographics data:', error.response?.data || error.message);
@@ -50,4 +91,5 @@ app.get('/get-demographics', async (req, res) => {
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Visit http://localhost:${PORT}/auth to authorize the application.`);
 });
