@@ -5,13 +5,13 @@ const PORT = process.env.PORT || 3000;
 
 // OAuth 2.0 Client Configuration
 const oAuth2Client = new google.auth.OAuth2(
-  'YOUR_CLIENT_ID',
-  'YOUR_CLIENT_SECRET',
-  'YOUR_REDIRECT_URI'
+  '358405041059-e9c3kjh8crvhjp1acee66aquof3a0799',
+  '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',
+  'https://get-datafrom-ga-4.vercel.app/'
 );
 
 // GA4 Property ID
-const propertyId = 'properties/YOUR_PROPERTY_ID';
+const propertyId = 'properties/474474772';
 
 app.get('/get-demographics', async (req, res) => {
   try {
